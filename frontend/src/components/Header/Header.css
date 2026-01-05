@@ -1,0 +1,217 @@
+/* Container full width */
+.header-container {
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Bóng mờ nhẹ dưới header */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Nội dung chính giới hạn chiều rộng */
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* --- LOGO --- */
+.logo {
+  font-size: 24px;
+  cursor: pointer;
+  font-family: sans-serif;
+}
+
+.logo-text {
+  color: #2563eb; /* Màu xanh dương */
+  font-weight: 600;
+}
+
+.logo-bold {
+  color: #1e293b; /* Màu đen xám */
+  font-weight: 800;
+}
+
+/* --- NAV MENU --- */
+.nav-menu {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #555;
+  font-weight: 500;
+  font-size: 15px;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  color: #2563eb;
+}
+
+/* Style cho nút đang active (như nút Trang chủ trong ảnh) */
+.nav-item.active {
+  background-color: #eff6ff; /* Nền xanh nhạt */
+  color: #2563eb; /* Chữ xanh đậm */
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.arrow-down {
+  font-size: 10px;
+  margin-left: 4px;
+  color: #999;
+}
+
+/* --- USER ACTIONS --- */
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px; /* Tăng kích thước vùng chứa */
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 5px;
+}
+
+.icon-wrapper:hover {
+  background-color: #f1f5f9; /* Hiệu ứng hover nền xám nhẹ */
+}
+
+.icon {
+  font-size: 24px; /* Tăng size icon */
+  color: #475569;
+}
+
+.icon:hover {
+  color: #2563eb;
+}
+
+/* Badge số lượng màu đỏ */
+.header-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+
+  /* Đảm bảo hình tròn không bị méo */
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white; /* Viền trắng giúp tách biệt với icon */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Nút User màu xanh hình vuông bo tròn */
+.user-btn {
+  background-color: #2563eb;
+  color: white;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px; /* Bo góc vuông nhẹ */
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 2px 5px rgba(37, 99, 235, 0.3);
+}
+
+.user-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.user-dropdown-container {
+  position: relative; /* Quan trọng để menu con absolute theo cái này */
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 120%; /* Cách nút user một chút */
+  right: 0;
+  width: 220px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  border: 1px solid #f1f5f9;
+  z-index: 1001;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.dropdown-item {
+  padding: 12px 15px;
+  font-size: 14px;
+  color: #334155;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f8fafc;
+  color: #2563eb;
+}
+
+/* Icon nhỏ bên cạnh chữ */
+.dropdown-icon {
+  font-size: 16px;
+  color: #94a3b8;
+}
+
+.dropdown-item:hover .dropdown-icon {
+  color: #2563eb;
+}
+
+/* Đường gạch ngang phân cách */
+.dropdown-divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 4px 0;
+}
+
+/* Nút đăng xuất (màu đỏ nhẹ khi hover) */
+.dropdown-item.logout:hover {
+  background-color: #fef2f2;
+  color: #ef4444;
+}
+
+.dropdown-item.logout:hover .dropdown-icon {
+  color: #ef4444;
+}
+
+/* Hiệu ứng hiện menu */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,180 @@
+/* Container chính */
+.history-container {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #eee;
+  min-height: 80vh;
+  border-radius: 8px;
+}
+
+/* Header màu tím */
+.history-header {
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  padding: 20px 30px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+}
+
+.history-header h2 {
+  margin: 0;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.order-count-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Card từng đơn hàng */
+.order-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 25px;
+  border: 1px solid #eee;
+}
+
+/* Header của Card (Màu tím đậm hơn header chính chút hoặc gradient khác) */
+.order-card-header {
+  background: linear-gradient(90deg, #6c5ce7, #8e44ad);
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: bold;
+  background: #f1c40f; /* Màu vàng mặc định cho Pending */
+  color: #333;
+}
+
+/* Phần thông tin người nhận (3 cột xám) */
+.order-info-section {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  background: #fff;
+}
+
+.info-box {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.info-icon {
+  width: 40px;
+  height: 40px;
+  background: #6c5ce7;
+  color: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.info-text label {
+  display: block;
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+
+.info-text span {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+/* Danh sách sản phẩm */
+.order-products-list {
+  padding: 0 20px;
+}
+
+.product-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.product-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 20px;
+  border: 1px solid #eee;
+}
+
+.product-details {
+  flex: 1;
+}
+
+.product-name {
+  font-weight: bold;
+  color: #2d3436;
+  margin-bottom: 5px;
+}
+
+.product-meta {
+  font-size: 13px;
+  color: #636e72;
+}
+
+.product-total {
+  font-weight: bold;
+  color: #0984e3;
+  font-size: 16px;
+}
+
+/* Footer tổng tiền (Màu tím dưới cùng) */
+.order-footer {
+  background: #6c5ce7; /* Giống hình */
+  color: white;
+  padding: 15px 20px;
+  margin-top: 10px;
+}
+
+.footer-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.footer-row.final {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 18px;
+  font-weight: bold;
+  opacity: 1;
+}

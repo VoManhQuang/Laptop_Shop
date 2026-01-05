@@ -16,7 +16,6 @@ class ProductCreate(ProductBase):
     pass
 
 class ProductUpdate(BaseModel):
-    # Dùng cho API sửa, cho phép gửi lẻ từng trường
     name: Optional[str] = None
     price: Optional[float] = Field(None, gt=0)
     image: Optional[str] = None
@@ -28,18 +27,6 @@ class ProductUpdate(BaseModel):
 
 class ProductOut(ProductBase):
     id: int
-
-    class Config:
-        from_attributes = True
-        
-class ProductUpdate(BaseModel):
-    name: Optional[str] = None
-    price: Optional[float] = None
-    description: Optional[str] = None
-    image: Optional[str] = None    # Chỉ nhận tên file ảnh (string)
-    brand: Optional[str] = None
-    quantity: Optional[int] = None
-    category: Optional[str] = None # Hoặc category_id tùy DB của bạn
 
     class Config:
         from_attributes = True

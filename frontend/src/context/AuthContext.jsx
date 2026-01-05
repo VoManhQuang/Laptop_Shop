@@ -5,10 +5,9 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // Kiểm tra xem localStorage có token chưa khi F5 trang
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user"); // Lưu tạm thông tin user
+    const storedUser = localStorage.getItem("user");
     if (token && storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -21,9 +20,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    // 1. Xóa sạch dữ liệu trong LocalStorage
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    setUser(null);
+    localStorage.removeItem("cartItems");
+    localStorage.removeItem("wishlist");
+
+    // 2. QUAN TRỌNG: Không gọi setUser(null) ở đây nữa!
+    // Để tránh React render lại và vô tình lưu ngược Cart cũ vào LocalStorage.
+    // Việc reload trang bên dưới sẽ tự động làm sạch State.
+
+    // 3. Tải lại trang ngay lập tức
     window.location.href = "/login";
   };
 

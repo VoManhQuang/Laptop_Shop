@@ -2,10 +2,9 @@ from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 
-# Cấu hình bảo mật
-SECRET_KEY = "your_super_secret_key_here" # Thay bằng một chuỗi ngẫu nhiên dài
+SECRET_KEY = "your_super_secret_key_here" 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 # Token hết hạn sau 1 ngày
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -20,7 +19,6 @@ class Hash:
 
     @staticmethod
     def create_access_token(data: dict):
-        """Hàm tạo JWT Token"""
         to_encode = data.copy()
         expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         to_encode.update({"exp": expire})

@@ -1,7 +1,6 @@
 import os
 import sys
 
-# Thêm thư mục backend vào sys.path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, current_dir)
 
@@ -9,7 +8,6 @@ from alembic.config import Config
 from alembic import command
 
 def apply_migrations():
-    """Apply tất cả migrations lên database"""
     alembic_cfg = Config("alembic.ini")
     
     try:
@@ -20,7 +18,6 @@ def apply_migrations():
         print(f"✗ Lỗi khi apply migrations: {e}")
 
 def downgrade_migration(steps=1):
-    """Rollback migrations"""
     alembic_cfg = Config("alembic.ini")
     
     try:

@@ -7,7 +7,6 @@ class Role(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), nullable=True)
-    
     users = relationship("User", back_populates="role")
 
     def __repr__(self):

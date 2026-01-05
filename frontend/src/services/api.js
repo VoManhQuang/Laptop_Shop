@@ -4,13 +4,8 @@ const API_URL = "http://localhost:8000/api";
 
 const api = axios.create({
   baseURL: API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
-// Add token to requests
-// SỬA: Xóa dấu cách thừa ở dòng dưới
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -24,11 +19,8 @@ api.interceptors.request.use(
   }
 );
 
-// Auth API
 export const authApi = {
   login: (email, password) =>
-    // FastAPI thường yêu cầu form-data cho login (OAuth2PasswordRequestForm)
-    // Code này dùng URLSearchParams là chính xác với FastAPI chuẩn.
     api.post(
       "/auth/login",
       new URLSearchParams({ username: email, password }),
@@ -37,29 +29,24 @@ export const authApi = {
       }
     ),
   register: (userData) => api.post("/auth/register", userData),
+  socialLogin: (data) => api.post("/auth/social-login", data),
 };
 
-// Users API (THÊM MỚI: Dùng cho trang Admin quản lý người dùng)
 export const userApi = {
-  getAll: () => api.get("/users"), // Cần đảm bảo backend có endpoint này
+  getAll: () => api.get("/users"),
   delete: (id) => api.delete(`/users/${id}`),
   update: (id, data) => api.put(`/users/${id}`, data),
   getById: (id) => api.get(`/users/${id}`),
   create: (userData) => {
-    // Vì có file ảnh nên browser sẽ tự động set Content-Type là multipart/form-data
-    // khi ta gửi đối tượng FormData
     return api.post("/users/", userData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
   },
-  update: (id, data) => {
-    return api.put(`/users/${id}`, data, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-  },
+  getProfile: () => api.get("/users/profile"),
+  updateProfile: (data) => api.put("/users/profile", data),
+  changePassword: (data) => api.put("/users/change-password", data),
 };
 
-// Products API
 export const productsApi = {
   getAll: (params) => api.get("/products/", { params }),
   getById: (id) => api.get(`/products/${id}`),
@@ -72,13 +59,12 @@ export const productsApi = {
 
     return api.post("/products/upload-image", formData, {
       headers: {
-        "Content-Type": undefined, // <--- QUAN TRỌNG: Ghi đè header mặc định
+        "Content-Type": undefined,
       },
     });
   },
 };
 
-// Cart API
 export const cartApi = {
   get: () => api.get("/cart"),
   add: (productId) => api.post(`/cart/add/${productId}`),
@@ -89,9 +75,17 @@ export const cartApi = {
 };
 
 export const orderApi = {
-  getAll: () => api.get("/orders/"),
+  createOrder: (orderData) => api.post("/orders", orderData),
+  getAll: () => api.get("/orders"),
+  updateStatus: (id, status) => api.put(`/orders/${id}`, { status }),
   getById: (id) => api.get(`/orders/${id}`),
   update: (id, data) => api.put(`/orders/${id}`, data),
+  delete: (id) => api.delete(`/orders/${id}`),
+  getMyOrders: () => api.get("/orders/my-orders"),
+};
+
+export const statsApi = {
+  getDashboard: () => api.get("/stats/dashboard"),
 };
 
 export default api;

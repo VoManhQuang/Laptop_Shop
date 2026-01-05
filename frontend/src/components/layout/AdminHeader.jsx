@@ -15,17 +15,15 @@ const AdminHeader = () => {
 
   return (
     <div className="admin-header">
-      {/* Container chính: flex-end để đẩy tất cả sang phải */}
       <div
         className="header-right"
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "flex-end", // Đảm bảo luôn nằm bên phải
-          gap: "15px", // Khoảng cách giữa cụm Admin và nút Đăng xuất (Gần hơn)
+          justifyContent: "flex-end",
+          gap: "15px",
         }}
       >
-        {/* 1. Thông tin Admin: Tên trước - Icon sau (Icon bên phải) */}
         <div
           className="admin-info"
           style={{ display: "flex", alignItems: "center", gap: "8px" }}
@@ -36,10 +34,8 @@ const AdminHeader = () => {
           <FaUserShield size={20} color="#3b82f6" />
         </div>
 
-        {/* Đường gạch ngăn cách nhỏ cho đẹp (tùy chọn) */}
         <div style={{ height: "20px", width: "1px", background: "#ddd" }}></div>
 
-        {/* 2. Nút Đăng xuất */}
         <button
           className="logout-btn"
           onClick={handleLogout}

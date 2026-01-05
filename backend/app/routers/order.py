@@ -1,123 +1,138 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
+from typing import List
+from datetime import datetime
+
 from database import get_db
 from ..models.Order import Order
 from ..models.OrderDetail import OrderDetail
-from ..models.Cart import Cart
-from ..models.Product import Product
-# Import đúng tên Schema bạn đã cung cấp
-from ..schemas.Order import OrderCreate, OrderResponse 
-
+from ..models.User import User        
+from ..models.Product import Product  
+from ..schemas.Order import OrderOut, OrderUpdate, OrderCreate
 from .auth import get_current_user
 
-router = APIRouter(prefix="/orders", tags=["Orders"])
+router = APIRouter(prefix="/api/orders", tags=["Orders"])
 
-# --- 1. ĐẶT HÀNG (CHECKOUT) ---
-@router.post("/", response_model=OrderResponse)
-def place_order(
-    order_in: OrderCreate, 
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
-):
-    # 1. Lấy giỏ hàng
-    cart = db.query(Cart).filter(Cart.user_id == current_user.id).first()
-    if not cart or not cart.cart_details:
-        raise HTTPException(status_code=400, detail="Giỏ hàng trống")
-
-    # 2. LỌC SẢN PHẨM: Chỉ lấy những món có trong danh sách product_ids gửi lên
-    # cart.cart_details là list các CartDetail trong DB
-    selected_items = []
-    order_total = 0
-    
-    # Duyệt qua từng món trong giỏ
-    for item in cart.cart_details:
-        if item.product_id in order_in.product_ids:
-            selected_items.append(item)
-            order_total += item.price * item.quantity
-
-    # Nếu lọc xong mà không thấy món nào hợp lệ (hoặc khách gửi list rỗng)
-    if not selected_items:
-        raise HTTPException(status_code=400, detail="Vui lòng chọn ít nhất 1 sản phẩm để thanh toán")
-
-    # 3. Tạo Order với tổng tiền của CÁC MÓN ĐÃ CHỌN
-    new_order = Order(
-        user_id=current_user.id,
-        receiver_name=order_in.receiver_name,
-        receiver_phone=order_in.receiver_phone,
-        receiver_address=order_in.receiver_address,
-        status="PENDING",
-        total_price=order_total 
-    )
-    db.add(new_order)
-    db.flush() 
-
-    # 4. Xử lý các món ĐÃ CHỌN (Chuyển sang OrderDetail, Trừ kho, Xóa khỏi Cart)
-    for cart_item in selected_items:
-        # a. Tạo OrderDetail
-        order_detail = OrderDetail(
-            order_id=new_order.id,
-            product_id=cart_item.product_id,
-            quantity=cart_item.quantity,
-            price=cart_item.price
+@router.post("", status_code=status.HTTP_201_CREATED)
+def create_order(order_data: OrderCreate, db: Session = Depends(get_db)):
+    try:
+        new_order = Order(
+            receiver_name=order_data.receiver_name,
+            receiver_phone=order_data.receiver_phone,
+            receiver_address=order_data.receiver_address,
+            total_price=order_data.total_price,
+            status=order_data.status,
+            user_id=order_data.user_id,
+            order_date=datetime.now()
         )
-        db.add(order_detail)
+        
+        db.add(new_order)
+        db.commit()
+        db.refresh(new_order) 
 
-        # b. Trừ kho
-        product = db.query(Product).filter(Product.id == cart_item.product_id).first()
-        if product:
-            if product.quantity < cart_item.quantity:
-                db.rollback()
-                raise HTTPException(status_code=400, detail=f"Sản phẩm {product.name} hết hàng")
-            product.quantity -= cart_item.quantity
-            product.sold += cart_item.quantity
+        for item in order_data.items:
+            product = db.query(Product).filter(Product.id == item.product_id).first()
+            
+            if not product:
+                db.delete(new_order)
+                db.commit()
+                raise HTTPException(status_code=404, detail=f"Sản phẩm ID {item.product_id} không tồn tại")
 
-        # c. Xóa món này khỏi CartDetail (Chỉ xóa món đã mua)
-        db.delete(cart_item)
+            if product.quantity < item.quantity:
+                db.delete(new_order)
+                db.commit()
+                raise HTTPException(status_code=400, detail=f"Sản phẩm '{product.name}' không đủ hàng (Chỉ còn {product.quantity})")
 
-    # 5. CẬP NHẬT LẠI TỔNG TIỀN CỦA GIỎ HÀNG (Quan trọng)
-    # Vì mình chỉ lấy đi một phần, nên tiền trong giỏ phải giảm đi
-    cart.sum -= order_total
+            new_detail = OrderDetail(
+                order_id=new_order.id,
+                product_id=item.product_id,
+                quantity=item.quantity,
+                price=item.price
+            )
+            db.add(new_detail)
+        
+        db.commit() 
+        return {"message": "Đặt hàng thành công", "id": new_order.id}
+
+    except HTTPException as http_ex:
+        raise http_ex 
+    except Exception as e:
+        db.rollback()
+        print(f"Lỗi: {e}")
+        raise HTTPException(status_code=500, detail="Lỗi Server khi tạo đơn hàng")
+
+# --- 2. XEM TẤT CẢ ĐƠN HÀNG ---
+@router.get("", response_model=List[OrderOut])
+def get_all_orders(db: Session = Depends(get_db)): 
+    orders = db.query(Order).options(
+        joinedload(Order.user) 
+    ).order_by(Order.order_date.desc()).all()
+    return orders
+
+@router.get("/my-orders", response_model=List[OrderOut])
+def get_my_orders(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    orders = db.query(Order).options(
+        joinedload(Order.details).joinedload(OrderDetail.product)
+    ).filter(Order.user_id == current_user.id).order_by(Order.order_date.desc()).all()
+    return orders
+
+# --- 3. XEM CHI TIẾT ---
+@router.get("/{id}", response_model=OrderOut)
+def get_order_detail(id: int, db: Session = Depends(get_db)):
+    order = db.query(Order).options(
+        joinedload(Order.user),                         
+        joinedload(Order.details).joinedload(OrderDetail.product) 
+    ).filter(Order.id == id).first()
     
-    # Nếu cart.sum < 0 (đề phòng lỗi làm tròn số) thì gán về 0
-    if cart.sum < 0: 
-        cart.sum = 0
+    if not order:
+        raise HTTPException(status_code=404, detail="Không tìm thấy đơn hàng")
+    return order
 
-    db.commit()
-    db.refresh(new_order)
-    
-    return new_order
-
-@router.get("/all", response_model=list[OrderResponse])
-def get_all_orders(
+@router.put("/{id}", response_model=OrderOut)
+def update_order(
+    id: int, 
+    order_update: OrderUpdate, 
     db: Session = Depends(get_db), 
     current_user = Depends(get_current_user)
 ):
-    # Kiểm tra quyền Admin (Giả sử role_id = 1 là Admin)
     if current_user.role_id != 1:
-        raise HTTPException(status_code=403, detail="Bạn không có quyền xem danh sách đơn hàng")
+        raise HTTPException(status_code=403, detail="Không có quyền truy cập")
+
+    db_order = db.query(Order).filter(Order.id == id).first()
+    if not db_order:
+        raise HTTPException(status_code=404, detail="Không tìm thấy đơn hàng")
+
+    old_status = db_order.status
+
+    update_data = order_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_order, key, value) 
+
+    if db_order.status == "COMPLETED" and old_status != "COMPLETED":
+        for detail in db_order.details:
+            product = db.query(Product).filter(Product.id == detail.product_id).first()
+            if product:
+                if product.quantity < detail.quantity:
+                    raise HTTPException(status_code=400, detail=f"Không thể hoàn thành đơn: Sản phẩm '{product.name}' không đủ tồn kho.")
+
+                product.quantity = product.quantity - detail.quantity
+                product.sold = (product.sold or 0) + detail.quantity
+
+    db.commit()
     
-    # Lấy tất cả đơn hàng, sắp xếp đơn mới nhất lên đầu
-    orders = db.query(Order).order_by(Order.id.desc()).all()
-    return orders
+    db_order = db.query(Order).options(
+        joinedload(Order.user), 
+        joinedload(Order.details).joinedload(OrderDetail.product)
+    ).filter(Order.id == id).first()
+    
+    return db_order
 
-# --- 4. (ADMIN) CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG ---
-@router.put("/{order_id}/status")
-def update_order_status(
-    order_id: int, 
-    new_status: str, # Ví dụ: CONFIRMED, SHIPPING, DONE
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
-):
-    # Chỉ Admin mới được duyệt đơn
-    if current_user.role_id != 1:
-        raise HTTPException(status_code=403, detail="Bạn không có quyền duyệt đơn")
-
-    order = db.query(Order).filter(Order.id == order_id).first()
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_order(id: int, db: Session = Depends(get_db)):
+    order = db.query(Order).filter(Order.id == id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Không tìm thấy đơn hàng")
 
-    # Cập nhật trạng thái
-    order.status = new_status
+    db.delete(order)
     db.commit()
-    
-    return {"message": "Cập nhật trạng thái thành công", "order_id": order.id, "status": new_status}
+    return None

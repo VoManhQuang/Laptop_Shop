@@ -1,25 +1,60 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional # Nhớ import List
+from pydantic import BaseModel
+from typing import List, Optional
 from datetime import datetime
 
-# ... OrderBase giữ nguyên ...
-class OrderBase(BaseModel):
-    receiver_name: str = Field(..., alias="receiverName")
-    receiver_phone: str = Field(..., alias="receiverPhone")
-    receiver_address: str = Field(..., alias="receiverAddress")
-    status: Optional[str] = "PENDING"
+class OrderItemSchema(BaseModel):
+    product_id: int
+    quantity: int
+    price: float
 
-# SỬA Ở ĐÂY: Thêm list product_ids
-class OrderCreate(OrderBase):
-    product_ids: List[int] = Field(..., description="Danh sách ID sản phẩm muốn mua")
+class OrderCreate(BaseModel):
+    receiver_name: str
+    receiver_phone: str
+    receiver_address: str
+    total_price: float
+    status: str = "PENDING"
+    user_id: Optional[int] = None
+    items: List[OrderItemSchema] 
 
-# ... OrderResponse giữ nguyên ...
-class OrderResponse(OrderBase):
-    id: int
-    user_id: int
-    total_price: float = Field(..., alias="totalPrice")
-    order_date: datetime = Field(..., alias="orderDate")
-    
+class ProductShort(BaseModel):
+    name: str
+    image: Optional[str] = None
     class Config:
         from_attributes = True
-        populate_by_name = True
+
+class OrderDetailOut(BaseModel):
+    id: int
+    product_id: int
+    quantity: int
+    price: float
+    product: Optional[ProductShort] = None
+
+    class Config:
+        from_attributes = True
+
+class UserShort(BaseModel):
+    email: str
+    class Config:
+        from_attributes = True
+
+class OrderOut(BaseModel):
+    id: int
+    total_price: float
+    receiver_name: Optional[str] = None
+    receiver_phone: Optional[str] = None
+    receiver_address: Optional[str] = None
+    status: str
+    order_date: datetime
+
+    user: Optional[UserShort] = None
+
+    details: List[OrderDetailOut] = [] 
+
+    class Config:
+        from_attributes = True
+
+class OrderUpdate(BaseModel):
+    receiver_name: Optional[str] = None
+    receiver_phone: Optional[str] = None
+    receiver_address: Optional[str] = None
+    status: Optional[str] = None

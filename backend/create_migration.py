@@ -1,7 +1,6 @@
 import os
 import sys
 
-# Thêm thư mục backend vào sys.path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, current_dir)
 
@@ -9,7 +8,6 @@ from alembic.config import Config
 from alembic import command
 
 def create_migration(message="Auto migration"):
-    """Tạo migration mới"""
     alembic_cfg = Config("alembic.ini")
     
     try:
@@ -21,6 +19,5 @@ def create_migration(message="Auto migration"):
         print(f"Lỗi khi tạo migration: {e}")
 
 if __name__ == "__main__":
-    # Lấy message từ command line hoặc dùng default
     message = sys.argv[1] if len(sys.argv) > 1 else "Auto migration"
     create_migration(message)

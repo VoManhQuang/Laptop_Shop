@@ -11,7 +11,6 @@ const AdminLayout = () => {
       <div className="admin-content">
         <AdminHeader />
         <div className="admin-main">
-          {/* Outlet là nơi nội dung các trang con (User, Product...) sẽ hiển thị */}
           <Outlet />
         </div>
       </div>

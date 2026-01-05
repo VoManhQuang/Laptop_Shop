@@ -21,21 +21,18 @@ const RegisterPage = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // 1. Kiểm tra mật khẩu khớp nhau
     if (formData.password !== formData.confirmPassword) {
       alert("Mật khẩu nhập lại không khớp!");
       return;
     }
 
-    // 2. Chuẩn bị dữ liệu gửi Backend
     const payload = {
       email: formData.email,
       password: formData.password,
-      // Gộp First + Last thành fullName
       fullName: `${formData.firstName} ${formData.lastName}`.trim(),
-      role_id: 2, // Mặc định đăng ký là USER (Khách hàng)
-      phone: "", // Có thể để trống
-      address: "", // Có thể để trống
+      role_id: 2,
+      phone: "",
+      address: "",
     };
 
     try {

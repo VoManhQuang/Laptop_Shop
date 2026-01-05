@@ -1,18 +1,32 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   FaTachometerAlt,
   FaUsers,
   FaBoxOpen,
   FaShoppingCart,
 } from "react-icons/fa";
-import "./AdminLayout.css"; // Chúng ta sẽ tạo file CSS này sau
+import "./AdminLayout.css";
 
 const AdminSidebar = () => {
   return (
     <div className="admin-sidebar">
       <div className="sidebar-brand">
-        <h2>LaptopShop</h2>
+        <Link to="/" style={{ textDecoration: "none", color: "#fff" }}>
+          <div
+            className="sidebar-brand-text mx-3"
+            style={{
+              fontSize: "1.5rem",
+              fontWeight: "800",
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+              cursor: "pointer",
+            }}
+          >
+            LaptopShop
+          </div>
+        </Link>
       </div>
       <ul className="sidebar-menu">
         <li>

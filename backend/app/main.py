@@ -1,14 +1,16 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
 from fastapi.staticfiles import StaticFiles
+from app.routers import stats
 
-from database import engine, Base, SessionLocal
-from .routers import auth, product, cart, order
-from .models import Role, User # Import models để SQLAlchemy nhận diện bảng
+try:
+    from app.database import engine, Base
+except ImportError:
+    from database import engine, Base
 
-# --- 2. Tạo bảng trong Database (nếu chưa có) ---
+from app.routers import auth, product, cart, order, user
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -26,24 +28,20 @@ if not os.path.exists(upload_path):
 
 app.mount("/uploads", StaticFiles(directory=upload_path), name="uploads")
 
-# --- 3. Cấu hình CORS ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Production nên đổi thành domain frontend cụ thể (vd: ["http://localhost:3000"])
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# --- 4. Đăng ký các Router ---
-# Đây là bước quan trọng để các API trong auth.py hoạt động
 app.include_router(auth.router)
-# Sau này có thêm router khác thì thêm vào đây:
 app.include_router(product.router)
 app.include_router(cart.router)
 app.include_router(order.router)
+app.include_router(user.router)
 
-# --- 5. API Root ---
 @app.get("/")
 def root():
     return {
@@ -52,3 +50,5 @@ def root():
         "redoc_url": "/redoc",
         "version": "1.0.0"
     }
+
+app.include_router(stats.router)
