@@ -10,6 +10,7 @@ const RegisterPage = () => {
     firstName: "",
     lastName: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
   });
@@ -21,17 +22,32 @@ const RegisterPage = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
+    const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+    if (!fullName || fullName.length < 2) {
+      alert("Họ tên phải có ít nhất 2 ký tự!");
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       alert("Mật khẩu nhập lại không khớp!");
       return;
     }
 
+    if (!/^\d{10}$/.test(formData.phone.trim())) {
+      alert("Số điện thoại phải gồm đúng 10 chữ số!");
+      return;
+    }
+
+    if (!formData.email.trim().endsWith('@gmail.com')) {
+      alert("Email phải có đuôi @gmail.com!");
+      return;
+    }
+
     const payload = {
-      email: formData.email,
+      email: formData.email.trim(),
       password: formData.password,
-      fullName: `${formData.firstName} ${formData.lastName}`.trim(),
-      role_id: 2,
-      phone: "",
+      full_name: fullName,
+      phone: formData.phone.trim(),
       address: "",
     };
 
@@ -88,6 +104,18 @@ const RegisterPage = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="admin@gmail.com"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Phone</label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="0123456789"
               required
             />
           </div>

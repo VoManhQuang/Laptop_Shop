@@ -9,9 +9,9 @@ class UserBase(BaseModel):
     phone: Optional[str] = None
 
 class UserCreate(BaseModel):
-    email: str 
-    password: str = Field(..., min_length=6)
-    full_name: str = Field(..., min_length=2, alias="fullName")
+    email: EmailStr 
+    password: str = Field(..., min_length=6, max_length=72)
+    full_name: str = Field(..., min_length=2)
     address: Optional[str] = None
     phone: str
 

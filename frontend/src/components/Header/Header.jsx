@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   FaHeart,
   FaShoppingBag,
@@ -14,6 +14,8 @@ import { useWishlist } from "../../context/WishlistContext";
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const {pathname} = location;
   const { cartCount } = useCart();
   const { wishlistItems } = useWishlist();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -32,19 +34,38 @@ const Header = () => {
         </div>
 
         <nav className="nav-menu">
-          <Link to="/" className="nav-item active">
+          <Link
+            to="/"
+            className={`nav-item ${pathname === "/" ? "active" : ""}`}
+          >
             Trang chủ
           </Link>
-          <Link to="/products" className="nav-item">
+
+          <Link
+            to="/products"
+            className={`nav-item ${pathname.startsWith("/products") ? "active" : ""}`}
+          >
             Sản phẩm
           </Link>
-          <div className="nav-item">
+
+          <Link
+            to="/categories"
+            className={`nav-item ${pathname.startsWith("/categories") ? "active" : ""}`}
+          >
             Danh mục <span className="arrow-down">▼</span>
-          </div>
-          <Link to="/about" className="nav-item">
+          </Link>
+
+          <Link
+            to="/about"
+            className={`nav-item ${pathname === "/about" ? "active" : ""}`}
+          >
             Giới thiệu
           </Link>
-          <Link to="/contact" className="nav-item">
+
+          <Link
+            to="/contact"
+            className={`nav-item ${pathname === "/contact" ? "active" : ""}`}
+          >
             Liên hệ
           </Link>
         </nav>

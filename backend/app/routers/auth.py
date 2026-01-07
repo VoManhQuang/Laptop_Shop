@@ -23,6 +23,7 @@ class SocialLoginRequest(BaseModel):
 
 @router.post("/register", response_model=UserOut)
 def register(user_in: UserCreate, db: Session = Depends(get_db)):
+    print("Received user_in:", user_in.dict())  # Debug log
     user_exist = db.query(User).filter(User.email == user_in.email).first()
     if user_exist:
         raise HTTPException(status_code=400, detail="Email đã tồn tại")

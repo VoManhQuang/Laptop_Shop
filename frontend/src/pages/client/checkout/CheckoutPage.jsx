@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../../components/Header/Header";
 import Footer from "../../../components/Footer/Footer";
 import { useCart } from "../../../context/CartContext";
-import { orderApi } from "../../../services/api";
+import { orderApi, paymentApi } from "../../../services/api";
 import {
   FaTruck,
   FaUser,
@@ -28,6 +28,8 @@ const CheckoutPage = () => {
     phone: "",
     address: "",
   });
+
+  const [paymentMethod, setPaymentMethod] = useState("COD");
 
   const handleInputChange = (e) => {
     setFormData({
@@ -65,7 +67,10 @@ const CheckoutPage = () => {
       receiver_name: formData.fullName,
       receiver_phone: formData.phone,
       receiver_address: formData.address,
-      status: "PENDING",
+      status:
+        paymentMethod === "VNPAY" || paymentMethod === "MOMO"
+          ? "PENDING"
+          : "PAID", // Nếu online payment thì pending, chờ thanh toán
       user_id: userId,
 
       items: cartItems.map((item) => ({
@@ -78,8 +83,19 @@ const CheckoutPage = () => {
     try {
       console.log("Đang gửi đơn hàng:", orderData); // Log để kiểm tra
       const response = await orderApi.createOrder(orderData);
+      const orderId = response.data.id;
 
-      if (response.status === 200 || response.status === 201) {
+      if (paymentMethod === "VNPAY" || paymentMethod === "MOMO") {
+        // Tạo URL thanh toán
+        const paymentResponse = await paymentApi.createPaymentUrl(
+          orderId,
+          paymentMethod
+        );
+        const paymentUrl = paymentResponse.data.payment_url;
+        // Redirect đến payment gateway
+        window.location.href = paymentUrl;
+      } else {
+        // COD
         alert("🎉 Đặt hàng thành công");
         clearCart();
         navigate("/");
@@ -201,13 +217,51 @@ const CheckoutPage = () => {
             </div>
             <div className="section-body">
               <label className="payment-option">
-                <input type="radio" name="payment" defaultChecked />
+                <input
+                  type="radio"
+                  name="payment"
+                  value="COD"
+                  checked={paymentMethod === "COD"}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                />
                 <div>
                   <div className="payment-label">
                     Thanh toán khi nhận hàng (COD)
                   </div>
                   <div style={{ fontSize: "13px", color: "#666" }}>
                     Thanh toán tiền mặt khi nhận hàng
+                  </div>
+                </div>
+              </label>
+
+              <label className="payment-option">
+                <input
+                  type="radio"
+                  name="payment"
+                  value="VNPAY"
+                  checked={paymentMethod === "VNPAY"}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                />
+                <div>
+                  <div className="payment-label">Thanh toán qua VNPay</div>
+                  <div style={{ fontSize: "13px", color: "#666" }}>
+                    Thanh toán trực tuyến an toàn qua VNPay
+                  </div>
+                </div>
+              </label>
+
+              <label className="payment-option">
+                <input
+                  type="radio"
+                  name="payment"
+                  value="MOMO"
+                  checked={paymentMethod === "MOMO"}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                />
+                <div>
+                  <div className="payment-label">Thanh toán qua MoMo</div>
+                  <div style={{ fontSize: "13px", color: "#666" }}>
+                    Thanh toán nhanh qua ví MoMo
                   </div>
                 </div>
               </label>

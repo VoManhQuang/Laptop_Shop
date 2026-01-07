@@ -15,7 +15,9 @@ import {
 } from "react-icons/fa";
 import Header from "../../../components/Header/Header";
 import Footer from "../../../components/Footer/Footer";
+import ProductCard from "../../client/products/ProductCard";
 import "./HomePage.css";
+import "../products/ProductCard.css";
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
 
@@ -286,81 +288,9 @@ const HomePage = () => {
           ) : (
             <>
               <div className="products-grid">
-                {currentProducts.length > 0 ? (
-                  currentProducts.map((item) => (
-                    <div className="product-card" key={item.id}>
-                      <div
-                        className={`btn-wishlist ${
-                          isInWishlist(item.id) ? "active" : ""
-                        }`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleWishlist(item);
-                        }}
-                      >
-                        <FaHeart />
-                      </div>
-                      <div className="badge-overlay">
-                        <span className="badge new">MỚI</span>
-                        <span className="badge sale">-10%</span>
-                      </div>
-                      <img
-                        src={
-                          item.image
-                            ? `http://localhost:8000/uploads/${item.image}`
-                            : "https://via.placeholder.com/200"
-                        }
-                        alt={item.name}
-                        className="product-img"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => navigate(`/products/${item.id}`)}
-                      />
-                      <div className="product-info">
-                        <div
-                          className="product-name"
-                          title={item.name}
-                          style={{ cursor: "pointer" }}
-                          onClick={() => navigate(`/products/${item.id}`)}
-                        >
-                          {item.name}
-                        </div>
-                        <div
-                          style={{
-                            color: "#f1c40f",
-                            fontSize: "12px",
-                            margin: "5px 0",
-                          }}
-                        >
-                          <FaStar />
-                          <FaStar />
-                          <FaStar />
-                          <FaStar />
-                          <FaStar style={{ color: "#ccc" }} /> (4.0)
-                        </div>
-                        <div className="product-price">
-                          {formatCurrency(item.price)}
-                        </div>
-                        <button
-                          className="btn-add-cart"
-                          onClick={() => addToCart(item)}
-                        >
-                          <FaShoppingCart /> THÊM VÀO GIỎ
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p
-                    style={{
-                      gridColumn: "1 / -1",
-                      textAlign: "center",
-                      padding: "20px",
-                      color: "#666",
-                    }}
-                  >
-                    Không tìm thấy sản phẩm nào phù hợp!
-                  </p>
-                )}
+                {currentProducts.map((item) => (
+                  <ProductCard key={item.id} product={item} showCart={true} />
+                ))}
               </div>
 
               {filteredProducts.length > itemsPerPage && (

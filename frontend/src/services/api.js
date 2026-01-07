@@ -88,4 +88,12 @@ export const statsApi = {
   getDashboard: () => api.get("/stats/dashboard"),
 };
 
+export const paymentApi = {
+  createPaymentUrl: (orderId, paymentMethod) =>
+    api.post("/payment/create-payment-url", {
+      order_id: orderId,
+      payment_method: paymentMethod,
+    }),
+};
+
 export default api;

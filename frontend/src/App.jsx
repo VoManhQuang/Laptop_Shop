@@ -16,13 +16,15 @@ import UpdateOrder from "./pages/admin/Order/UpdateOrder";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import HomePage from "./pages/client/home/HomePage";
-import ProductDetail from "./pages/client/product/ProductDetail";
+import ProductDetail from "./pages/client/products/ProductDetail";
+import ProductsPage from "./pages/client/home/ProductsPage";
 import CartPage from "./pages/client/cart/CartPage";
 import { CartProvider } from "./context/CartContext";
 import CheckoutPage from "./pages/client/checkout/CheckoutPage";
 import ProfilePage from "./pages/client/profile/ProfilePage";
 import OrderHistory from "./pages/client/OrderHistory/OrderHistory";
 import WishlistPage from "./pages/client/Wishlist/WishlistPage";
+import PaymentReturn from "./pages/client/checkout/PaymentReturn";
 import AdminRoute from "./components/auth/AdminRoute";
 import Dashboard from "./pages/admin/Dashboard/Dashboard";
 
@@ -46,8 +48,10 @@ function App() {
               }
             />
             <Route path="/products/:id" element={<ProductDetail />} />
+            <Route path="/products" element={<ProductsPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/payment-return" element={<PaymentReturn />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/history" element={<OrderHistory />} />
             <Route path="/wishlist" element={<WishlistPage />} />

@@ -2,14 +2,14 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.routers import stats
+from .routers import stats
 
 try:
-    from app.database import engine, Base
+    from .database import engine, Base
 except ImportError:
     from database import engine, Base
 
-from app.routers import auth, product, cart, order, user
+from .routers import auth, product, cart, order, user, payment
 
 Base.metadata.create_all(bind=engine)
 
@@ -41,6 +41,7 @@ app.include_router(product.router)
 app.include_router(cart.router)
 app.include_router(order.router)
 app.include_router(user.router)
+app.include_router(payment.router)
 
 @app.get("/")
 def root():

@@ -59,17 +59,22 @@ export const CartProvider = ({ children }) => {
 
   const updateQuantity = (id, delta) => {
     setCartItems((prev) =>
-      prev.map((item) => {
+    prev
+      .map((item) => {
         if (item.id === id) {
           const newQty = item.quantity + delta;
+
           if (newQty > item.maxStock) {
             alert(`Kho chỉ còn ${item.maxStock} sản phẩm.`);
             return item;
           }
-          return { ...item, quantity: newQty > 0 ? newQty : 1 };
+
+          return { ...item, quantity: newQty };
         }
         return item;
       })
+      // Xoá các sản phẩm có số lượng <= 0
+      .filter((item) => item.quantity > 0)
     );
   };
 
@@ -92,7 +97,7 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = () => setCartItems([]);
 
-  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  const cartCount = cartItems.length;
 
   return (
     <CartContext.Provider
