@@ -66,8 +66,8 @@ export const productsApi = {
 };
 
 export const cartApi = {
-  get: () => api.get("/cart"),
-  add: (productId) => api.post(`/cart/add/${productId}`),
+  get: () => api.get("/cart/me"),
+  add: (productId, quantity = 1) => api.post(`/cart/add?product_id=${productId}&quantity=${quantity}`),
   increase: (productId) => api.post(`/cart/increase/${productId}`),
   decrease: (productId) => api.post(`/cart/decrease/${productId}`),
   remove: (cartDetailId) => api.delete(`/cart/remove/${cartDetailId}`),
